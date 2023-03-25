@@ -331,6 +331,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 }
 
                 if (ex is OperationCanceledException) return;
+                if (ex is UniTask.IOperationCanceledException) return;
 
                 onError(ex);
             }
@@ -370,6 +371,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 }
 
                 if (ex is OperationCanceledException) return;
+                if (ex is UniTask.IOperationCanceledException) return;
 
                 onError(ex);
             }
@@ -409,6 +411,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 }
 
                 if (ex is OperationCanceledException) return;
+                if (ex is UniTask.IOperationCanceledException) return;
 
                 onError(ex);
             }
@@ -442,6 +445,7 @@ namespace Cysharp.Threading.Tasks.Linq
             catch (Exception ex)
             {
                 if (ex is OperationCanceledException) return;
+                if (ex is UniTask.IOperationCanceledException) return;
 
                 observer.OnError(ex);
             }
@@ -481,6 +485,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 }
 
                 if (ex is OperationCanceledException) return;
+                if (ex is UniTask.IOperationCanceledException) return;
 
                 onError(ex);
             }
@@ -520,6 +525,7 @@ namespace Cysharp.Threading.Tasks.Linq
                 }
 
                 if (ex is OperationCanceledException) return;
+                if (ex is UniTask.IOperationCanceledException) return;
 
                 onError(ex);
             }

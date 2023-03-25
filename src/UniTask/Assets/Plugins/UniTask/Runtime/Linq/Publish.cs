@@ -120,7 +120,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
 
                 if (parent.isCompleted) return CompletedTasks.False;
 

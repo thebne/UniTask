@@ -2,14 +2,53 @@
 
 using Cysharp.Threading.Tasks.Internal;
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using UnityEngine;
 
 namespace Cysharp.Threading.Tasks
 {
     public partial struct UniTask
     {
+        public interface IOperationCanceledException
+        {
+            CancellationToken CancellationToken { get; }
+            Exception AsException() => this as Exception;
+        }
+        public class DefaultOperationCanceledException : OperationCanceledException, IOperationCanceledException
+        {
+            public DefaultOperationCanceledException(CancellationToken cancellationToken) : base(cancellationToken)
+            {
+            }
+        }
+
+        public delegate IOperationCanceledException OperationCanceledExceptionDelegate(CancellationToken cancellationToken = default);
+        internal static OperationCanceledExceptionDelegate OperationCanceledExceptionFactory = t => new DefaultOperationCanceledException(t);
+        public static void SetOperationCanceledExceptionFactory(OperationCanceledExceptionDelegate d)
+        {
+            OperationCanceledExceptionFactory = d;
+        }
+        public static Exception GetOperationCanceledException(CancellationToken cancellationToken = default)
+        {
+            var newException = OperationCanceledExceptionFactory(cancellationToken);
+            var ex = newException.AsException();
+            // runtime check
+            if (ex == null)
+            {
+                Debug.LogError($"OperationCanceledExceptionFactory must return Exception, but returned {newException.GetType()}.");
+                return new DefaultOperationCanceledException(cancellationToken);
+            }
+            return ex;
+        }
+        
+        public static void ThrowIfCancellationRequested(CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw GetOperationCanceledException(cancellationToken);
+            }
+        }
+        
         static readonly UniTask CanceledUniTask = new Func<UniTask>(() =>
         {
             return new UniTask(new CanceledResultSource(CancellationToken.None), 0);
@@ -33,6 +72,10 @@ namespace Cysharp.Threading.Tasks
             {
                 return FromCanceled(oce.CancellationToken);
             }
+            if (ex is IOperationCanceledException ioce)
+            {
+                return FromCanceled(ioce.CancellationToken);
+            }
 
             return new UniTask(new ExceptionResultSource(ex), 0);
         }
@@ -42,6 +85,10 @@ namespace Cysharp.Threading.Tasks
             if (ex is OperationCanceledException oce)
             {
                 return FromCanceled<T>(oce.CancellationToken);
+            }
+            if (ex is IOperationCanceledException ioce)
+            {
+                return FromCanceled<T>(ioce.CancellationToken);
             }
 
             return new UniTask<T>(new ExceptionResultSource<T>(ex), 0);
@@ -301,7 +348,7 @@ namespace Cysharp.Threading.Tasks
 
             public void GetResult(short token)
             {
-                throw new OperationCanceledException(cancellationToken);
+                throw GetOperationCanceledException(cancellationToken);
             }
 
             public UniTaskStatus GetStatus(short token)
@@ -331,12 +378,12 @@ namespace Cysharp.Threading.Tasks
 
             public T GetResult(short token)
             {
-                throw new OperationCanceledException(cancellationToken);
+                throw GetOperationCanceledException(cancellationToken);
             }
 
             void IUniTaskSource.GetResult(short token)
             {
-                throw new OperationCanceledException(cancellationToken);
+                throw GetOperationCanceledException(cancellationToken);
             }
 
             public UniTaskStatus GetStatus(short token)

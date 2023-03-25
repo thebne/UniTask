@@ -14,7 +14,7 @@ namespace Cysharp.Threading.Tasks
         {
             await UniTask.Yield(waitTiming);
             jobHandle.Complete();
-            cancellationToken.ThrowIfCancellationRequested(); // call cancel after Complete.
+            UniTask.ThrowIfCancellationRequested(cancellationToken); // call cancel after Complete.
         }
 
         public static UniTask.Awaiter GetAwaiter(this JobHandle jobHandle)

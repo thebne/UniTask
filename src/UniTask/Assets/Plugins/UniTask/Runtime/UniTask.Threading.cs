@@ -126,7 +126,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() { UniTask.ThrowIfCancellationRequested(cancellationToken); }
 
             public void OnCompleted(Action continuation)
             {
@@ -171,7 +171,7 @@ namespace Cysharp.Threading.Tasks
 
             public bool IsCompleted => PlayerLoopHelper.MainThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
 
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() { UniTask.ThrowIfCancellationRequested(cancellationToken); }
 
             public void OnCompleted(Action continuation)
             {
@@ -317,7 +317,7 @@ namespace Cysharp.Threading.Tasks
             }
 
             public bool IsCompleted => false;
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() { UniTask.ThrowIfCancellationRequested(cancellationToken); }
 
             public void OnCompleted(Action continuation)
             {
@@ -390,7 +390,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
+            public void GetResult() { UniTask.ThrowIfCancellationRequested(cancellationToken); }
 
             public void OnCompleted(Action continuation)
             {

@@ -72,7 +72,7 @@ namespace Cysharp.Threading.Tasks.Internal
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void ThrowOperationCanceledException()
         {
-            throw new OperationCanceledException();
+            throw UniTask.GetOperationCanceledException();
         }
     }
 }

@@ -62,11 +62,11 @@ namespace Cysharp.Threading.Tasks
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask RunOnThreadPool(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -84,17 +84,17 @@ namespace Cysharp.Threading.Tasks
                 action();
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
         }
 
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask RunOnThreadPool(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -112,17 +112,17 @@ namespace Cysharp.Threading.Tasks
                 action(state);
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
         }
 
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask RunOnThreadPool(Func<UniTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -140,17 +140,17 @@ namespace Cysharp.Threading.Tasks
                 await action();
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
         }
 
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask RunOnThreadPool(Func<object, UniTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -168,17 +168,17 @@ namespace Cysharp.Threading.Tasks
                 await action(state);
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
         }
 
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask<T> RunOnThreadPool<T>(Func<T> func, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -189,7 +189,7 @@ namespace Cysharp.Threading.Tasks
                 finally
                 {
                     await UniTask.Yield();
-                    cancellationToken.ThrowIfCancellationRequested();
+                    UniTask.ThrowIfCancellationRequested(cancellationToken);
                 }
             }
             else
@@ -201,11 +201,11 @@ namespace Cysharp.Threading.Tasks
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask<T> RunOnThreadPool<T>(Func<UniTask<T>> func, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -215,15 +215,15 @@ namespace Cysharp.Threading.Tasks
                 }
                 finally
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    UniTask.ThrowIfCancellationRequested(cancellationToken);
                     await UniTask.Yield();
-                    cancellationToken.ThrowIfCancellationRequested();
+                    UniTask.ThrowIfCancellationRequested(cancellationToken);
                 }
             }
             else
             {
                 var result = await func();
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 return result;
             }
         }
@@ -231,11 +231,11 @@ namespace Cysharp.Threading.Tasks
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask<T> RunOnThreadPool<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -246,7 +246,7 @@ namespace Cysharp.Threading.Tasks
                 finally
                 {
                     await UniTask.Yield();
-                    cancellationToken.ThrowIfCancellationRequested();
+                    UniTask.ThrowIfCancellationRequested(cancellationToken);
                 }
             }
             else
@@ -258,11 +258,11 @@ namespace Cysharp.Threading.Tasks
         /// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
         public static async UniTask<T> RunOnThreadPool<T>(Func<object, UniTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             await UniTask.SwitchToThreadPool();
 
-            cancellationToken.ThrowIfCancellationRequested();
+            UniTask.ThrowIfCancellationRequested(cancellationToken);
 
             if (configureAwait)
             {
@@ -272,15 +272,15 @@ namespace Cysharp.Threading.Tasks
                 }
                 finally
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    UniTask.ThrowIfCancellationRequested(cancellationToken);
                     await UniTask.Yield();
-                    cancellationToken.ThrowIfCancellationRequested();
+                    UniTask.ThrowIfCancellationRequested(cancellationToken);
                 }
             }
             else
             {
                 var result = await func(state);
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 return result;
             }
         }

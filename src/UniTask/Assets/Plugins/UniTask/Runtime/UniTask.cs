@@ -233,7 +233,7 @@ namespace Cysharp.Threading.Tasks
                     catch (Exception ex)
                     {
                         exception = ExceptionDispatchInfo.Capture(ex);
-                        if (ex is OperationCanceledException)
+                        if (ex is OperationCanceledException or IOperationCanceledException)
                         {
                             status = UniTaskStatus.Canceled;
                         }
@@ -477,7 +477,7 @@ namespace Cysharp.Threading.Tasks
                  : "(" + this.source.UnsafeGetStatus() + ")";
         }
 
-        sealed class IsCanceledSource : IUniTaskSource<(bool, T)>
+        readonly struct IsCanceledSource : IUniTaskSource<(bool, T)>
         {
             readonly IUniTaskSource<T> source;
 
@@ -563,7 +563,7 @@ namespace Cysharp.Threading.Tasks
                     catch (Exception ex)
                     {
                         exception = ExceptionDispatchInfo.Capture(ex);
-                        if (ex is OperationCanceledException)
+                        if (ex is OperationCanceledException or UniTask.IOperationCanceledException)
                         {
                             status = UniTaskStatus.Canceled;
                         }

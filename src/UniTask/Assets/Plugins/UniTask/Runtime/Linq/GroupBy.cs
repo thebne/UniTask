@@ -262,7 +262,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 completionSource.Reset();
 
                 if (groupEnumerator == null)
@@ -373,7 +373,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 completionSource.Reset();
 
                 if (groupEnumerator == null)
@@ -481,7 +481,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 completionSource.Reset();
 
                 if (groupEnumerator == null)
@@ -595,7 +595,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 completionSource.Reset();
 
                 if (groupEnumerator == null)
@@ -723,7 +723,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 completionSource.Reset();
 
                 if (groupEnumerator == null)
@@ -837,7 +837,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 completionSource.Reset();
 
                 if (groupEnumerator == null)

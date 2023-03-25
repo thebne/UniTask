@@ -108,6 +108,10 @@ namespace Cysharp.Threading.Tasks
                     {
                         UniTaskScheduler.PublishUnobservedTaskException(oc);
                     }
+                    else if (error is UniTask.IOperationCanceledException ioc)
+                    {
+                        UniTaskScheduler.PublishUnobservedTaskException(ioc.AsException());
+                    }
                     else if (error is ExceptionHolder e)
                     {
                         UniTaskScheduler.PublishUnobservedTaskException(e.GetException().SourceException);
@@ -153,7 +157,7 @@ namespace Cysharp.Threading.Tasks
             {
                 // setup result
                 this.hasUnhandledError = true;
-                if (error is OperationCanceledException)
+                if (error is OperationCanceledException or UniTask.IOperationCanceledException)
                 {
                     this.error = error;
                 }
@@ -179,7 +183,7 @@ namespace Cysharp.Threading.Tasks
             {
                 // setup result
                 this.hasUnhandledError = true;
-                this.error = new OperationCanceledException(cancellationToken);
+                this.error = UniTask.GetOperationCanceledException(cancellationToken);
 
                 if (continuation != null || Interlocked.CompareExchange(ref this.continuation, UniTaskCompletionSourceCoreShared.s_sentinel, null) != null)
                 {
@@ -204,7 +208,7 @@ namespace Cysharp.Threading.Tasks
             ValidateToken(token);
             return (continuation == null || (completedCount == 0)) ? UniTaskStatus.Pending
                  : (error == null) ? UniTaskStatus.Succeeded
-                 : (error is OperationCanceledException) ? UniTaskStatus.Canceled
+                 : (error is OperationCanceledException or UniTask.IOperationCanceledException) ? UniTaskStatus.Canceled
                  : UniTaskStatus.Faulted;
         }
 
@@ -215,7 +219,7 @@ namespace Cysharp.Threading.Tasks
         {
             return (continuation == null || (completedCount == 0)) ? UniTaskStatus.Pending
                  : (error == null) ? UniTaskStatus.Succeeded
-                 : (error is OperationCanceledException) ? UniTaskStatus.Canceled
+                 : (error is OperationCanceledException or UniTask.IOperationCanceledException) ? UniTaskStatus.Canceled
                  : UniTaskStatus.Faulted;
         }
 
@@ -238,6 +242,10 @@ namespace Cysharp.Threading.Tasks
                 if (error is OperationCanceledException oce)
                 {
                     throw oce;
+                }
+                else if (error is UniTask.IOperationCanceledException ioce)
+                {
+                    throw ioce.AsException();
                 }
                 else if (error is ExceptionHolder eh)
                 {
@@ -625,6 +633,10 @@ namespace Cysharp.Threading.Tasks
             {
                 return TrySetCanceled(oce.CancellationToken);
             }
+            if (exception is UniTask.IOperationCanceledException ioce)
+            {
+                return TrySetCanceled(ioce.CancellationToken);
+            }
 
             if (UnsafeGetStatus() != UniTaskStatus.Pending) return false;
 
@@ -646,7 +658,7 @@ namespace Cysharp.Threading.Tasks
                     exception.GetException().Throw();
                     return;
                 case UniTaskStatus.Canceled:
-                    throw new OperationCanceledException(cancellationToken);
+                    throw UniTask.GetOperationCanceledException(cancellationToken);
                 default:
                 case UniTaskStatus.Pending:
                     throw new InvalidOperationException("not yet completed.");
@@ -810,6 +822,10 @@ namespace Cysharp.Threading.Tasks
             {
                 return TrySetCanceled(oce.CancellationToken);
             }
+            if (exception is UniTask.IOperationCanceledException ioce)
+            {
+                return TrySetCanceled(ioce.CancellationToken);
+            }
 
             if (UnsafeGetStatus() != UniTaskStatus.Pending) return false;
 
@@ -831,7 +847,7 @@ namespace Cysharp.Threading.Tasks
                     exception.GetException().Throw();
                     return default;
                 case UniTaskStatus.Canceled:
-                    throw new OperationCanceledException(cancellationToken);
+                    throw UniTask.GetOperationCanceledException(cancellationToken);
                 default:
                 case UniTaskStatus.Pending:
                     throw new InvalidOperationException("not yet completed.");

@@ -69,7 +69,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
 
                 if (enumerator == null)
                 {
@@ -227,7 +227,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
 
                 if (enumerator == null)
                 {

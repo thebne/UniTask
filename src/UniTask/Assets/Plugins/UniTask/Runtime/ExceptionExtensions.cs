@@ -7,7 +7,7 @@ namespace Cysharp.Threading.Tasks
     {
         public static bool IsOperationCanceledException(this Exception exception)
         {
-            return exception is OperationCanceledException;
+            return exception is OperationCanceledException or UniTask.IOperationCanceledException;
         }
     }
 }

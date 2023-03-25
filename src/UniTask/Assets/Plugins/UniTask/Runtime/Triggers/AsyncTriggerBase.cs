@@ -107,7 +107,7 @@ namespace Cysharp.Threading.Tasks.Triggers
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 completionSource.Reset();
 
                 if (!called)

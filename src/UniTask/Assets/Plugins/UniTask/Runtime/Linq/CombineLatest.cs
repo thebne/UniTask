@@ -287,7 +287,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -548,7 +548,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -893,7 +893,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -1322,7 +1322,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -1835,7 +1835,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -2432,7 +2432,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -3113,7 +3113,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -3878,7 +3878,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -4727,7 +4727,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -5660,7 +5660,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -6677,7 +6677,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -7778,7 +7778,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -8963,7 +8963,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)
@@ -10232,7 +10232,7 @@ namespace Cysharp.Threading.Tasks.Linq
 
             public UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
                 if (completedCount == CompleteCount) return CompletedTasks.False;
 
                 if (enumerator1 == null)

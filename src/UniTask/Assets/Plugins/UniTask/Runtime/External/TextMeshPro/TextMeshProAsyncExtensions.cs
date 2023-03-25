@@ -38,6 +38,7 @@ namespace Cysharp.Threading.Tasks
                     catch (Exception ex)
                     {
                         if (ex is OperationCanceledException) return;
+                        if (ex is UniTask.IOperationCanceledException) return;
 
                         if (rebindOnError && !repeat)
                         {
@@ -99,6 +100,7 @@ namespace Cysharp.Threading.Tasks
                     catch (Exception ex)
                     {
                         if (ex is OperationCanceledException) return;
+                        if (ex is UniTask.IOperationCanceledException) return;
 
                         if (rebindOnError && !repeat)
                         {

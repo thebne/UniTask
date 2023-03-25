@@ -48,7 +48,7 @@ namespace Cysharp.Threading.Tasks.Linq
             // after consumed array, don't use await so allow async(not require UniTaskCompletionSourceCore).
             public async UniTask<bool> MoveNextAsync()
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                UniTask.ThrowIfCancellationRequested(cancellationToken);
 
                 if (array == null)
                 {

@@ -42,7 +42,7 @@ namespace Cysharp.Threading.Tasks
         {
             if (ex != null)
             {
-                if (!PropagateOperationCanceledException && ex is OperationCanceledException)
+                if (!PropagateOperationCanceledException && ex is OperationCanceledException or UniTask.IOperationCanceledException)
                 {
                     return;
                 }
