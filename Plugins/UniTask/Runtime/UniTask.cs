@@ -162,7 +162,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        sealed class IsCanceledSource : IUniTaskSource<bool>
+        readonly struct IsCanceledSource : IUniTaskSource<bool>
         {
             readonly IUniTaskSource source;
 
