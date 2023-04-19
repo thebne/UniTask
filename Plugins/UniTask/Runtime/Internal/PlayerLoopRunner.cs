@@ -170,6 +170,13 @@ namespace Cysharp.Threading.Tasks.Internal
                     var action = loopItems[i];
                     if (action != null)
                     {
+                        if (action.IsCancellationRequested)
+                        {
+                            loopItems[i] = null;
+                            action.NotifyCanceledCallback?.Invoke();
+                            continue;
+                        }
+
                         try
                         {
                             if (!action.MoveNext())
@@ -198,6 +205,14 @@ namespace Cysharp.Threading.Tasks.Internal
                         var fromTail = loopItems[j];
                         if (fromTail != null)
                         {
+                            if (fromTail.IsCancellationRequested)
+                            {
+                                loopItems[j] = null;
+                                j--;
+                                fromTail.NotifyCanceledCallback?.Invoke();
+                                continue;
+                            }
+                            
                             try
                             {
                                 if (!fromTail.MoveNext())

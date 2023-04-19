@@ -138,6 +138,14 @@ namespace Cysharp.Threading.Tasks
                 cancellationToken = default;
                 return pool.TryPush(this);
             }
+
+            public bool IsCancellationRequested => cancellationToken.IsCancellationRequested;
+            public Action NotifyCanceledCallback { get; set; }
+            public void NotifyCanceled()
+            {
+                TryReturn();
+                NotifyCanceledCallback?.Invoke();
+            }
         }
 
         sealed class WaitWhilePromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitWhilePromise>

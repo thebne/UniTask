@@ -179,7 +179,8 @@ namespace Cysharp.Threading.Tasks
             {
                 // setup result
                 this.hasUnhandledError = true;
-                this.error = new OperationCanceledException(cancellationToken);
+                // this.error = new OperationCanceledException(cancellationToken);
+                this.error = UniTaskStatus.Canceled;
 
                 if (continuation != null || Interlocked.CompareExchange(ref this.continuation, UniTaskCompletionSourceCoreShared.s_sentinel, null) != null)
                 {
@@ -202,6 +203,11 @@ namespace Cysharp.Threading.Tasks
         public UniTaskStatus GetStatus(short token)
         {
             ValidateToken(token);
+
+            // avoid throwing exceptions
+            if (error is UniTaskStatus.Canceled)
+                return UniTaskStatus.Canceled;
+            
             return (continuation == null || (completedCount == 0)) ? UniTaskStatus.Pending
                  : (error == null) ? UniTaskStatus.Succeeded
                  : (error is OperationCanceledException) ? UniTaskStatus.Canceled

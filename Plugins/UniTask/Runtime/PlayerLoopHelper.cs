@@ -171,9 +171,16 @@ namespace Cysharp.Threading.Tasks
 #endif
     }
 
-    public interface IPlayerLoopItem
+    public interface IPlayerLoopItem : IHasCancelNotification
     {
         bool MoveNext();
+        bool IsCancellationRequested => false;
+    }
+    
+    public interface IHasCancelNotification
+    {
+        void NotifyCanceled() { }
+        Action NotifyCanceledCallback { get => null; set { } }
     }
 
     public static class PlayerLoopHelper

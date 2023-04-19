@@ -265,7 +265,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        sealed class WhenAnyPromise : IUniTaskSource<int>
+        sealed class WhenAnyPromise : IUniTaskSource<int>, IHasCancelNotification
         {
             int completedCount;
             UniTaskCompletionSourceCore<int> core;
@@ -288,6 +288,7 @@ namespace Cysharp.Threading.Tasks
                     }
                     catch (Exception ex)
                     {
+                        OnAnyTaskCancel();
                         core.TrySetException(ex);
                         continue; // consume others.
                     }
@@ -298,6 +299,7 @@ namespace Cysharp.Threading.Tasks
                     }
                     else
                     {
+                        tasks[i].TrySetNotifyCanceled(OnAnyTaskCancel);
                         awaiter.SourceOnCompleted(state =>
                         {
                             using (var t = (StateTuple<WhenAnyPromise, UniTask.Awaiter, int>)state)
@@ -308,6 +310,9 @@ namespace Cysharp.Threading.Tasks
                     }
                 }
             }
+
+            private void OnAnyTaskCancel() => NotifyCanceledCallback?.Invoke();
+            public Action NotifyCanceledCallback { get; set; }
 
             static void TryInvokeContinuation(WhenAnyPromise self, in UniTask.Awaiter awaiter, int i)
             {

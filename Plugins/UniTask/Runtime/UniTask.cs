@@ -87,6 +87,14 @@ namespace Cysharp.Threading.Tasks
 
 #endif
 
+        public bool TrySetNotifyCanceled(Action onCancel)
+        {
+            if (source is not IPlayerLoopItem loopItem) return false;
+
+            loopItem.NotifyCanceledCallback = onCancel;
+            return true;
+        }
+
         public override string ToString()
         {
             if (source == null) return "()";
@@ -403,6 +411,14 @@ namespace Cysharp.Threading.Tasks
         public Awaiter GetAwaiter()
         {
             return new Awaiter(this);
+        }
+        
+        public bool TrySetNotifyCanceled(Action onCancel)
+        {
+            if (source is not IHasCancelNotification hasCancelNotification) return false;
+
+            hasCancelNotification.NotifyCanceledCallback = onCancel;
+            return true;
         }
 
         /// <summary>
