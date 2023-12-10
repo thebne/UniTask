@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks.Internal;
@@ -20,6 +21,7 @@ namespace Cysharp.Threading.Tasks
         public const string EnableAutoReloadKey = "UniTaskTrackerWindow_EnableAutoReloadKey";
         public const string EnableTrackingKey = "UniTaskTrackerWindow_EnableTrackingKey";
         public const string EnableStackTraceKey = "UniTaskTrackerWindow_EnableStackTraceKey";
+        public const string StackSearchKey = "UniTaskTrackerWindow_StackSearchKey";
 
         public static class EditorEnableState
         {
@@ -55,14 +57,27 @@ namespace Cysharp.Threading.Tasks
                     UnityEditor.EditorPrefs.SetBool(EnableStackTraceKey, value);
                 }
             }
+            
+            static string stackSearch;
+            public static string StackSearch
+            {
+                get { return stackSearch; }
+                set
+                {
+                    stackSearch = value;
+                    UnityEditor.EditorPrefs.SetString(StackSearchKey, value);
+                }
+            }
         }
 
 #endif
 
 
-        static List<KeyValuePair<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> listPool = new List<KeyValuePair<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
+        static List<KeyValuePair<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackFrame, string stackTrace)>> 
+            listPool = new();
 
-        static readonly WeakDictionary<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
+        static readonly WeakDictionary<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackFrame, string stackTrace)> 
+            tracking = new();
 
         [Conditional("UNITY_EDITOR")]
         public static void TrackActiveTask(IUniTaskSource task, int skipFrame)
@@ -71,6 +86,28 @@ namespace Cysharp.Threading.Tasks
             dirty = true;
             if (!EditorEnableState.EnableTracking) return;
             var stackTrace = EditorEnableState.EnableStackTrace ? new StackTrace(skipFrame, true).CleanupAsyncStackTrace() : "";
+
+            string stackFrame;
+            string firstFrame = string.Empty;
+            int depth = skipFrame;
+            MethodBase lastMethod = null;
+            do
+            {
+                var frame = new StackFrame(depth++, true);
+                if (frame.GetMethod() == lastMethod)
+                {
+                    stackFrame = firstFrame;
+                    break;
+                }
+
+                lastMethod = frame.GetMethod();
+                stackFrame = frame.ToString();
+                if (string.IsNullOrEmpty(firstFrame))
+                {
+                    firstFrame = stackFrame;
+                }
+            } 
+            while (!string.IsNullOrEmpty(EditorEnableState.StackSearch) && !stackFrame.Contains(EditorEnableState.StackSearch));
 
             string typeName;
             if (EditorEnableState.EnableStackTrace)
@@ -83,7 +120,7 @@ namespace Cysharp.Threading.Tasks
             {
                 typeName = task.GetType().Name;
             }
-            tracking.TryAdd(task, (typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow, stackTrace));
+            tracking.TryAdd(task, (typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow, stackFrame, stackTrace));
 #endif
         }
 
@@ -94,6 +131,16 @@ namespace Cysharp.Threading.Tasks
             dirty = true;
             if (!EditorEnableState.EnableTracking) return;
             var success = tracking.TryRemove(task);
+#endif
+        }
+        
+        public static string GetTaskFrame(IUniTaskSource task)
+        {
+#if UNITY_EDITOR
+            if (!EditorEnableState.EnableTracking) return string.Empty;
+            return tracking.TryGetValue(task, out var value) 
+                ? value.stackFrame
+                : string.Empty;
 #endif
         }
 

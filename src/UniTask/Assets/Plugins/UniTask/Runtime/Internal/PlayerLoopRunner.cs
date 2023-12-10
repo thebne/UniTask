@@ -1,6 +1,7 @@
 ﻿
 using System;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks.Internal
 {
@@ -175,6 +176,15 @@ namespace Cysharp.Threading.Tasks.Internal
                     var action = loopItems[i];
                     if (action != null)
                     {
+                        #if UNITY_EDITOR
+                        string taskName = null;
+                        if (action is IUniTaskSource source && TaskTracker.EditorEnableState.EnableTracking)
+                        {
+                            taskName = TaskTracker.GetTaskFrame(source);
+                            Profiler.BeginSample("UniTask: " + taskName);
+                        }
+                        #endif
+
                         try
                         {
                             if (!action.MoveNext())
@@ -193,7 +203,18 @@ namespace Cysharp.Threading.Tasks.Internal
                             {
                                 unhandledExceptionCallback(ex);
                             }
-                            catch { }
+                            catch
+                            {
+                            }
+                        }
+                        finally
+                        {
+                            #if UNITY_EDITOR
+                            if (taskName != null)
+                            {
+                                Profiler.EndSample();
+                            }
+                            #endif
                         }
                     }
 
@@ -203,6 +224,14 @@ namespace Cysharp.Threading.Tasks.Internal
                         var fromTail = loopItems[j];
                         if (fromTail != null)
                         {
+                            #if UNITY_EDITOR
+                            string taskName = null;
+                            if (action is IUniTaskSource source && TaskTracker.EditorEnableState.EnableTracking)
+                            {
+                                taskName = TaskTracker.GetTaskFrame(source);
+                                Profiler.BeginSample("UniTask: " + taskName);
+                            }
+                            #endif
                             try
                             {
                                 if (!fromTail.MoveNext())
@@ -230,6 +259,15 @@ namespace Cysharp.Threading.Tasks.Internal
                                 }
                                 catch { }
                                 continue; // next j
+                            }
+                            finally
+                            {
+                                #if UNITY_EDITOR
+                                if (taskName != null)
+                                {
+                                    Profiler.EndSample();
+                                }
+                                #endif
                             }
                         }
                         else
