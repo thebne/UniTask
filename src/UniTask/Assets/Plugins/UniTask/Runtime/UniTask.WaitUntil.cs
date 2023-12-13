@@ -143,7 +143,7 @@ namespace Cysharp.Threading.Tasks
             public bool silenceCancellationRequested { get; set; }
         }
 
-        sealed class WaitWhilePromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitWhilePromise>
+        sealed class WaitWhilePromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitWhilePromise>, ISilenceCancellation
         {
             static TaskPool<WaitWhilePromise> pool;
             WaitWhilePromise nextNode;
@@ -217,7 +217,8 @@ namespace Cysharp.Threading.Tasks
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    core.TrySetCanceled(cancellationToken);
+                    if (!silenceCancellationRequested)
+                        core.TrySetCanceled(cancellationToken);
                     return false;
                 }
 
@@ -246,6 +247,8 @@ namespace Cysharp.Threading.Tasks
                 cancellationToken = default;
                 return pool.TryPush(this);
             }
+
+            public bool silenceCancellationRequested { get; set; }
         }
 
         sealed class WaitUntilCanceledPromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilCanceledPromise>

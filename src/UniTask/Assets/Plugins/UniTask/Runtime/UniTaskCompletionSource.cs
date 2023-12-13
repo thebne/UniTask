@@ -41,7 +41,7 @@ namespace Cysharp.Threading.Tasks
 
     public interface ISilenceCancellation
     {
-        bool silenceCancellationRequested { get; set; }
+        bool silenceCancellationRequested { set; }
     }
 
     internal class ExceptionHolder

@@ -182,7 +182,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        sealed class YieldPromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<YieldPromise>
+        sealed class YieldPromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<YieldPromise>, ISilenceCancellation
         {
             static TaskPool<YieldPromise> pool;
             YieldPromise nextNode;
@@ -254,7 +254,8 @@ namespace Cysharp.Threading.Tasks
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    core.TrySetCanceled(cancellationToken);
+                    if (!silenceCancellationRequested)
+                        core.TrySetCanceled(cancellationToken);
                     return false;
                 }
 
@@ -269,6 +270,8 @@ namespace Cysharp.Threading.Tasks
                 cancellationToken = default;
                 return pool.TryPush(this);
             }
+
+            public bool silenceCancellationRequested { get; set; }
         }
 
         sealed class NextFramePromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<NextFramePromise>, ISilenceCancellation
