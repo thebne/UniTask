@@ -256,6 +256,8 @@ namespace Cysharp.Threading.Tasks
                 {
                     if (!silenceCancellationRequested)
                         core.TrySetCanceled(cancellationToken);
+                    else
+                        TryReturn();
                     return false;
                 }
 
@@ -349,6 +351,8 @@ namespace Cysharp.Threading.Tasks
                 {
                     if (!silenceCancellationRequested)
                         core.TrySetCanceled(cancellationToken);
+                    else
+                        TryReturn();
                     return false;
                 }
 
