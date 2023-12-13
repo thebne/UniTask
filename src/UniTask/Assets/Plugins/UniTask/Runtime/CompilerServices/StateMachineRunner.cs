@@ -217,7 +217,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             try
             {
-                if (silenceCancellationRequested)
+                if (silenceCancellationRequested && core.UnsafeGetStatus() == UniTaskStatus.Canceled)
                     return;
             
                 core.GetResult(token);
@@ -348,7 +348,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             try
             {
-                if (silenceCancellationRequested)
+                if (silenceCancellationRequested && core.UnsafeGetStatus() == UniTaskStatus.Canceled)
                     return default;
             
                 return core.GetResult(token);
