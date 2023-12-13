@@ -452,6 +452,8 @@ namespace Cysharp.Threading.Tasks
         
         public bool TrySetSilence(bool silence)
         {
+            if (source == null)
+                return true;
             if (source is not ISilenceCancellation silenceCancellation) return false;
             silenceCancellation.silenceCancellationRequested = silence;
             return true;
