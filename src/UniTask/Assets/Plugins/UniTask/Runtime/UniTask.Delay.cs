@@ -286,12 +286,6 @@ namespace Cysharp.Threading.Tasks
             CancellationToken cancellationToken;
             UniTaskCompletionSourceCore<AsyncUnit> core;
             
-            private bool silenceCancellationRequested;
-            void ISilenceCancellation.SetSilenceCancellation(bool silence)
-            {
-                silenceCancellationRequested = silence;
-            }
-
             NextFramePromise()
             {
             }
@@ -371,6 +365,8 @@ namespace Cysharp.Threading.Tasks
                 cancellationToken = default;
                 return pool.TryPush(this);
             }
+
+            public bool silenceCancellationRequested { get; set; }
         }
 
         sealed class WaitForEndOfFramePromise : IUniTaskSource, ITaskPoolNode<WaitForEndOfFramePromise>, System.Collections.IEnumerator

@@ -60,8 +60,10 @@ namespace Cysharp.Threading.Tasks
 
         public bool TrySetSilence(bool silence)
         {
+            if (source == null)
+                return true;
             if (source is not ISilenceCancellation silenceCancellation) return false;
-            silenceCancellation.SetSilenceCancellation(silence);
+            silenceCancellation.silenceCancellationRequested = silence;
             return true;
         }
 
@@ -451,7 +453,7 @@ namespace Cysharp.Threading.Tasks
         public bool TrySetSilence(bool silence)
         {
             if (source is not ISilenceCancellation silenceCancellation) return false;
-            silenceCancellation.SetSilenceCancellation(silence);
+            silenceCancellation.silenceCancellationRequested = silence;
             return true;
         }
 

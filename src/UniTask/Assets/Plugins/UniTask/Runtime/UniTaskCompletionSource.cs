@@ -41,7 +41,7 @@ namespace Cysharp.Threading.Tasks
 
     public interface ISilenceCancellation
     {
-        void SetSilenceCancellation(bool silence);
+        bool silenceCancellationRequested { get; set; }
     }
 
     internal class ExceptionHolder
@@ -752,10 +752,7 @@ namespace Cysharp.Threading.Tasks
             return false;
         }
 
-        public void SetSilenceCancellation(bool silence)
-        {
-            // currently not implemented - exception is thrown because it's not run through MoveNext
-        }
+        public bool silenceCancellationRequested { get; set; }
     }
 
     public class UniTaskCompletionSource<T> : IUniTaskSource<T>, IPromise<T>, ISilenceCancellation
@@ -948,9 +945,6 @@ namespace Cysharp.Threading.Tasks
             return false;
         }
 
-        public void SetSilenceCancellation(bool silence)
-        {
-            // currently not implemented - exception is thrown because it's not run through MoveNext
-        }
+        public bool silenceCancellationRequested { get; set; }
     }
 }

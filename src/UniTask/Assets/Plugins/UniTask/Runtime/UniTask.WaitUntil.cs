@@ -50,12 +50,6 @@ namespace Cysharp.Threading.Tasks
             CancellationToken cancellationToken;
 
             UniTaskCompletionSourceCore<object> core;
-            
-            private bool silenceCancellationRequested;
-            void ISilenceCancellation.SetSilenceCancellation(bool silence)
-            {
-                silenceCancellationRequested = silence;
-            }
 
             WaitUntilPromise()
             {
@@ -145,6 +139,8 @@ namespace Cysharp.Threading.Tasks
                 cancellationToken = default;
                 return pool.TryPush(this);
             }
+
+            public bool silenceCancellationRequested { get; set; }
         }
 
         sealed class WaitWhilePromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitWhilePromise>

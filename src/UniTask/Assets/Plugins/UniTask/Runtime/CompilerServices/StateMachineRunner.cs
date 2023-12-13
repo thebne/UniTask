@@ -171,6 +171,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
+            silenceCancellationRequested = false;
             pool.TryPush(this);
         }
 
@@ -179,6 +180,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
+            silenceCancellationRequested = false;
             return pool.TryPush(this);
         }
 
@@ -215,6 +217,9 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             try
             {
+                if (silenceCancellationRequested)
+                    return;
+            
                 core.GetResult(token);
             }
             finally
@@ -246,10 +251,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             core.OnCompleted(continuation, state, token);
         }
 
-        public void SetSilenceCancellation(bool silence)
-        {
-            // ?
-        }
+        public bool silenceCancellationRequested { get; set; }
     }
 
     internal sealed class AsyncUniTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IUniTaskSource<T>, ITaskPoolNode<AsyncUniTask<TStateMachine, T>>, ISilenceCancellation
@@ -299,6 +301,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
+            silenceCancellationRequested = false;
             pool.TryPush(this);
         }
 
@@ -307,6 +310,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
+            silenceCancellationRequested = false;
             return pool.TryPush(this);
         }
 
@@ -344,6 +348,9 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             try
             {
+                if (silenceCancellationRequested)
+                    return default;
+            
                 return core.GetResult(token);
             }
             finally
@@ -381,10 +388,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             core.OnCompleted(continuation, state, token);
         }
 
-        public void SetSilenceCancellation(bool silence)
-        {
-            // ?
-        }
+        public bool silenceCancellationRequested { get; set; }
     }
 }
 
