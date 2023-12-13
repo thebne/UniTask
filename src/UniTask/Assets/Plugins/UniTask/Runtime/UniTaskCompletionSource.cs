@@ -39,6 +39,11 @@ namespace Cysharp.Threading.Tasks
     {
     }
 
+    public interface ISilenceCancellation
+    {
+        void SetSilenceCancellation(bool silence);
+    }
+
     internal class ExceptionHolder
     {
         ExceptionDispatchInfo exception;
@@ -567,7 +572,7 @@ namespace Cysharp.Threading.Tasks
         }
     }
 
-    public class UniTaskCompletionSource : IUniTaskSource, IPromise
+    public class UniTaskCompletionSource : IUniTaskSource, IPromise, ISilenceCancellation
     {
         CancellationToken cancellationToken;
         ExceptionHolder exception;
@@ -746,9 +751,14 @@ namespace Cysharp.Threading.Tasks
             }
             return false;
         }
+
+        public void SetSilenceCancellation(bool silence)
+        {
+            // currently not implemented - exception is thrown because it's not run through MoveNext
+        }
     }
 
-    public class UniTaskCompletionSource<T> : IUniTaskSource<T>, IPromise<T>
+    public class UniTaskCompletionSource<T> : IUniTaskSource<T>, IPromise<T>, ISilenceCancellation
     {
         CancellationToken cancellationToken;
         T result;
@@ -936,6 +946,11 @@ namespace Cysharp.Threading.Tasks
                 return true;
             }
             return false;
+        }
+
+        public void SetSilenceCancellation(bool silence)
+        {
+            // currently not implemented - exception is thrown because it's not run through MoveNext
         }
     }
 }

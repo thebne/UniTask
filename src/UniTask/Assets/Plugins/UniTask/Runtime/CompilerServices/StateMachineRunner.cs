@@ -125,7 +125,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         }
     }
 
-    internal sealed class AsyncUniTask<TStateMachine> : IStateMachineRunnerPromise, IUniTaskSource, ITaskPoolNode<AsyncUniTask<TStateMachine>>
+    internal sealed class AsyncUniTask<TStateMachine> : IStateMachineRunnerPromise, IUniTaskSource, ITaskPoolNode<AsyncUniTask<TStateMachine>>, ISilenceCancellation
         where TStateMachine : IAsyncStateMachine
     {
         static TaskPool<AsyncUniTask<TStateMachine>> pool;
@@ -245,9 +245,14 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             core.OnCompleted(continuation, state, token);
         }
+
+        public void SetSilenceCancellation(bool silence)
+        {
+            // ?
+        }
     }
 
-    internal sealed class AsyncUniTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IUniTaskSource<T>, ITaskPoolNode<AsyncUniTask<TStateMachine, T>>
+    internal sealed class AsyncUniTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IUniTaskSource<T>, ITaskPoolNode<AsyncUniTask<TStateMachine, T>>, ISilenceCancellation
         where TStateMachine : IAsyncStateMachine
     {
         static TaskPool<AsyncUniTask<TStateMachine, T>> pool;
@@ -374,6 +379,11 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
             core.OnCompleted(continuation, state, token);
+        }
+
+        public void SetSilenceCancellation(bool silence)
+        {
+            // ?
         }
     }
 }

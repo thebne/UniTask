@@ -58,6 +58,13 @@ namespace Cysharp.Threading.Tasks
             return new Awaiter(this);
         }
 
+        public bool TrySetSilence(bool silence)
+        {
+            if (source is not ISilenceCancellation silenceCancellation) return false;
+            silenceCancellation.SetSilenceCancellation(silence);
+            return true;
+        }
+
         /// <summary>
         /// returns (bool IsCanceled) instead of throws OperationCanceledException.
         /// </summary>
@@ -357,6 +364,12 @@ namespace Cysharp.Threading.Tasks
                 }
             }
         }
+
+        public string GetSourceName()
+        {
+            if (source == null) return "Completed";
+            return source.GetType().Name;
+        }
     }
 
     /// <summary>
@@ -434,10 +447,23 @@ namespace Cysharp.Threading.Tasks
             // Converting UniTask<T> -> UniTask is zero overhead.
             return new UniTask(this.source, this.token);
         }
+        
+        public bool TrySetSilence(bool silence)
+        {
+            if (source is not ISilenceCancellation silenceCancellation) return false;
+            silenceCancellation.SetSilenceCancellation(silence);
+            return true;
+        }
 
         public static implicit operator UniTask(UniTask<T> self)
         {
             return self.AsUniTask();
+        }
+
+        public string GetSourceName()
+        {
+            if (source == null) return "Completed";
+            return source.GetType().Name;
         }
 
 #if !UNITY_2018_3_OR_NEWER

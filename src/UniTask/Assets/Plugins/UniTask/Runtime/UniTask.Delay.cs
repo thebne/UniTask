@@ -271,7 +271,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        sealed class NextFramePromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<NextFramePromise>
+        sealed class NextFramePromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<NextFramePromise>, ISilenceCancellation
         {
             static TaskPool<NextFramePromise> pool;
             NextFramePromise nextNode;
@@ -285,6 +285,12 @@ namespace Cysharp.Threading.Tasks
             int frameCount;
             CancellationToken cancellationToken;
             UniTaskCompletionSourceCore<AsyncUnit> core;
+            
+            private bool silenceCancellationRequested;
+            void ISilenceCancellation.SetSilenceCancellation(bool silence)
+            {
+                silenceCancellationRequested = silence;
+            }
 
             NextFramePromise()
             {
@@ -344,7 +350,8 @@ namespace Cysharp.Threading.Tasks
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    core.TrySetCanceled(cancellationToken);
+                    if (!silenceCancellationRequested)
+                        core.TrySetCanceled(cancellationToken);
                     return false;
                 }
 

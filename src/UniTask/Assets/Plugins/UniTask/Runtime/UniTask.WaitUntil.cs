@@ -35,7 +35,7 @@ namespace Cysharp.Threading.Tasks
                 : WaitUntilValueChangedStandardObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, monitorTiming, cancellationToken, out token), token);
         }
 
-        sealed class WaitUntilPromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilPromise>
+        sealed class WaitUntilPromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilPromise>, ISilenceCancellation
         {
             static TaskPool<WaitUntilPromise> pool;
             WaitUntilPromise nextNode;
@@ -50,6 +50,12 @@ namespace Cysharp.Threading.Tasks
             CancellationToken cancellationToken;
 
             UniTaskCompletionSourceCore<object> core;
+            
+            private bool silenceCancellationRequested;
+            void ISilenceCancellation.SetSilenceCancellation(bool silence)
+            {
+                silenceCancellationRequested = silence;
+            }
 
             WaitUntilPromise()
             {
@@ -109,7 +115,8 @@ namespace Cysharp.Threading.Tasks
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    core.TrySetCanceled(cancellationToken);
+                    if (!silenceCancellationRequested)
+                        core.TrySetCanceled(cancellationToken);
                     return false;
                 }
 
