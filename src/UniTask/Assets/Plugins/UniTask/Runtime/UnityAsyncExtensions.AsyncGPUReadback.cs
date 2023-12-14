@@ -2,6 +2,7 @@
 
 using System;
 using System.Threading;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 
 namespace Cysharp.Threading.Tasks
@@ -56,7 +57,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create AsyncGPUReadbackRequestAwaiterConfiguredSource");
                     result = new AsyncGPUReadbackRequestAwaiterConfiguredSource();
+                    Profiler.EndSample();
                 }
 
                 result.asyncOperation = asyncOperation;

@@ -8,6 +8,7 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Cysharp.Threading.Tasks.Internal;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -343,7 +344,9 @@ namespace Cysharp.Threading.Tasks
         {
             if (!pool.TryPop(out var result))
             {
+                Profiler.BeginSample("Create AutoResetUniTaskCompletionSource");
                 result = new AutoResetUniTaskCompletionSource();
+                Profiler.EndSample();
             }
             TaskTracker.TrackActiveTask(result, 2);
             return result;
@@ -466,7 +469,9 @@ namespace Cysharp.Threading.Tasks
         {
             if (!pool.TryPop(out var result))
             {
+                Profiler.BeginSample("Create AutoResetUniTaskCompletionSource");
                 result = new AutoResetUniTaskCompletionSource<T>();
+                Profiler.EndSample();
             }
             TaskTracker.TrackActiveTask(result, 2);
             return result;

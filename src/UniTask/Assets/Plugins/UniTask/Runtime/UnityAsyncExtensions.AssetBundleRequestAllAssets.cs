@@ -8,6 +8,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -112,7 +113,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create AssetBundleRequestAllAssetsConfiguredSource");
                     result = new AssetBundleRequestAllAssetsConfiguredSource();
+                    Profiler.EndSample();
                 }
 
                 result.asyncOperation = asyncOperation;

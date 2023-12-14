@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using UnityEngine;
 using Cysharp.Threading.Tasks.Internal;
+using UnityEngine.Profiling;
 #if ENABLE_UNITYWEBREQUEST && (!UNITY_2019_1_OR_NEWER || UNITASK_WEBREQUEST_SUPPORT)
 using UnityEngine.Networking;
 #endif
@@ -109,7 +110,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create AsyncOperationConfiguredSource");
                     result = new AsyncOperationConfiguredSource();
+                    Profiler.EndSample();
                 }
 
                 result.asyncOperation = asyncOperation;
@@ -283,7 +286,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create ResourceRequestConfiguredSource");
                     result = new ResourceRequestConfiguredSource();
+                    Profiler.EndSample();
                 }
 
                 result.asyncOperation = asyncOperation;
@@ -462,7 +467,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create AssetBundleRequestConfiguredSource");
                     result = new AssetBundleRequestConfiguredSource();
+                    Profiler.EndSample();
                 }
 
                 result.asyncOperation = asyncOperation;
@@ -642,7 +649,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create AssetBundleCreateRequestConfiguredSource");
                     result = new AssetBundleCreateRequestConfiguredSource();
+                    Profiler.EndSample();
                 }
 
                 result.asyncOperation = asyncOperation;
@@ -837,7 +846,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create UnityWebRequestAsyncOperationConfiguredSource");
                     result = new UnityWebRequestAsyncOperationConfiguredSource();
+                    Profiler.EndSample();
                 }
 
                 result.asyncOperation = asyncOperation;

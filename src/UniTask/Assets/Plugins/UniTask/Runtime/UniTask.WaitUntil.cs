@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks.Internal;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -64,7 +65,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitUntilPromise");
                     result = new WaitUntilPromise();
+                    Profiler.EndSample();
                 }
 
                 result.predicate = predicate;
@@ -174,7 +177,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitWhilePromise");
                     result = new WaitWhilePromise();
+                    Profiler.EndSample();
                 }
 
                 result.predicate = predicate;
@@ -283,7 +288,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitUntilCanceledPromise");
                     result = new WaitUntilCanceledPromise();
+                    Profiler.EndSample();
                 }
 
                 result.cancellationToken = cancellationToken;
@@ -377,7 +384,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitUntilValueChangedUnityObjectPromise");
                     result = new WaitUntilValueChangedUnityObjectPromise<T, U>();
+                    Profiler.EndSample();
                 }
 
                 result.target = target;
@@ -500,7 +509,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitUntilValueChangedStandardObjectPromise");
                     result = new WaitUntilValueChangedStandardObjectPromise<T, U>();
+                    Profiler.EndSample();
                 }
 
                 result.target = new WeakReference<T>(target, false); // wrap in WeakReference.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks.Internal
 {
@@ -28,7 +29,9 @@ namespace Cysharp.Threading.Tasks.Internal
         {
             if (!pool.TryPop(out var item))
             {
+                Profiler.BeginSample("Create PooledDelegate");
                 item = new PooledDelegate<T>();
+                Profiler.EndSample();
             }
 
             item.continuation = continuation;

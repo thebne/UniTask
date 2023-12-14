@@ -6,6 +6,7 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -209,7 +210,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create YieldPromise");
                     result = new YieldPromise();
+                    Profiler.EndSample();
                 }
 
 
@@ -304,7 +307,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create NextFramePromise");
                     result = new NextFramePromise();
+                    Profiler.EndSample();
                 }
 
                 result.frameCount = PlayerLoopHelper.IsMainThread ? Time.frameCount : -1;
@@ -403,7 +408,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitForEndOfFramePromise");
                     result = new WaitForEndOfFramePromise();
+                    Profiler.EndSample();
                 }
 
                 result.cancellationToken = cancellationToken;
@@ -514,7 +521,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create DelayFramePromise");
                     result = new DelayFramePromise();
+                    Profiler.EndSample();
                 }
 
                 result.delayFrameCount = delayFrameCount;
@@ -642,7 +651,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create DelayPromise");
                     result = new DelayPromise();
+                    Profiler.EndSample();
                 }
 
                 result.elapsed = 0.0f;
@@ -753,7 +764,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create DelayIgnoreTimeScalePromise");
                     result = new DelayIgnoreTimeScalePromise();
+                    Profiler.EndSample();
                 }
 
                 result.elapsed = 0.0f;
@@ -863,7 +876,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create DelayRealtimePromise");
                     result = new DelayRealtimePromise();
+                    Profiler.EndSample();
                 }
 
                 result.stopwatch = ValueStopwatch.StartNew();

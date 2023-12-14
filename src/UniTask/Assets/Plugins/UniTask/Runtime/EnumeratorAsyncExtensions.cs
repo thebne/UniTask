@@ -7,6 +7,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using Cysharp.Threading.Tasks.Internal;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -77,7 +78,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create EnumeratorPromise");
                     result = new EnumeratorPromise();
+                    Profiler.EndSample();
                 }
                 TaskTracker.TrackActiveTask(result, 3);
 

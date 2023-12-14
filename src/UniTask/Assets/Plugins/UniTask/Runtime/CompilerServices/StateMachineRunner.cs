@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks.CompilerServices
 {
@@ -74,7 +75,9 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             if (!pool.TryPop(out var result))
             {
+                Profiler.BeginSample("Create AsyncUniTaskVoid<TStateMachine>");
                 result = new AsyncUniTaskVoid<TStateMachine>();
+                Profiler.EndSample();
             }
             TaskTracker.TrackActiveTask(result, 3);
 
@@ -150,7 +153,9 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             if (!pool.TryPop(out var result))
             {
+                Profiler.BeginSample("Create AsyncUniTask<TStateMachine>");
                 result = new AsyncUniTask<TStateMachine>();
+                Profiler.EndSample();
             }
             TaskTracker.TrackActiveTask(result, 3);
 
@@ -280,7 +285,9 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             if (!pool.TryPop(out var result))
             {
+                Profiler.BeginSample("Create AsyncUniTask<TStateMachine, T>");
                 result = new AsyncUniTask<TStateMachine, T>();
+                Profiler.EndSample();
             }
             TaskTracker.TrackActiveTask(result, 3);
 

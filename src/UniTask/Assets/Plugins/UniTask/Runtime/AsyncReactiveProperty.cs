@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -113,7 +114,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitAsyncSource");
                     result = new WaitAsyncSource();
+                    Profiler.EndSample();
                 }
 
                 result.parent = parent;
@@ -431,7 +434,9 @@ namespace Cysharp.Threading.Tasks
 
                 if (!pool.TryPop(out var result))
                 {
+                    Profiler.BeginSample("Create WaitAsyncSource");
                     result = new WaitAsyncSource();
+                    Profiler.EndSample();
                 }
 
                 result.parent = parent;
