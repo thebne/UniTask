@@ -141,6 +141,8 @@ namespace Cysharp.Threading.Tasks
             return tracking.TryGetValue(task, out var value) 
                 ? value.stackFrame
                 : string.Empty;
+#else
+            return string.Empty;
 #endif
         }
 
