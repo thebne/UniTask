@@ -706,6 +706,9 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         bool TrySignalCompletion(UniTaskStatus status)
         {
+            if (silenceCancellationRequested && UnsafeGetStatus() == UniTaskStatus.Canceled)
+                return false;
+            
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)UniTaskStatus.Pending) == (int)UniTaskStatus.Pending)
             {
                 if (gate == null)
@@ -899,6 +902,9 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         bool TrySignalCompletion(UniTaskStatus status)
         {
+            if (silenceCancellationRequested && UnsafeGetStatus() == UniTaskStatus.Canceled)
+                return false;
+            
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)UniTaskStatus.Pending) == (int)UniTaskStatus.Pending)
             {
                 if (gate == null)
