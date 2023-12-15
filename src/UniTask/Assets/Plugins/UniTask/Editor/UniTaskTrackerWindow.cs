@@ -42,7 +42,6 @@ namespace Cysharp.Threading.Tasks.Editor
             TaskTracker.EditorEnableState.EnableAutoReload = EditorPrefs.GetBool(TaskTracker.EnableAutoReloadKey, false);
             TaskTracker.EditorEnableState.EnableTracking = EditorPrefs.GetBool(TaskTracker.EnableTrackingKey, false);
             TaskTracker.EditorEnableState.EnableStackTrace = EditorPrefs.GetBool(TaskTracker.EnableStackTraceKey, false);
-            TaskTracker.EditorEnableState.StackSearch = EditorPrefs.GetString(TaskTracker.StackSearchKey, "");
         }
 
         void OnGUI()
@@ -67,7 +66,6 @@ namespace Cysharp.Threading.Tasks.Editor
         public static bool EnableAutoReload => TaskTracker.EditorEnableState.EnableAutoReload;
         public static bool EnableTracking => TaskTracker.EditorEnableState.EnableTracking;
         public static bool EnableStackTrace => TaskTracker.EditorEnableState.EnableStackTrace;
-        public static string StackSearch => TaskTracker.EditorEnableState.StackSearch;
         static readonly GUIContent EnableAutoReloadHeadContent = EditorGUIUtility.TrTextContent("Enable AutoReload", "Reload automatically.", (Texture)null);
         static readonly GUIContent ReloadHeadContent = EditorGUIUtility.TrTextContent("Reload", "Reload View.", (Texture)null);
         static readonly GUIContent GCHeadContent = EditorGUIUtility.TrTextContent("GC.Collect", "Invoke GC.Collect.", (Texture)null);
@@ -96,14 +94,6 @@ namespace Cysharp.Threading.Tasks.Editor
                 TaskTracker.EditorEnableState.EnableStackTrace = !EnableStackTrace;
             }
             
-            EditorGUI.BeginChangeCheck();
-            var stackSearch = EditorGUILayout.TextField(StackSearchHeadContent, StackSearch, 
-                EditorStyles.toolbarTextField, GUILayout.MinWidth(300));
-            if (EditorGUI.EndChangeCheck())
-            {
-                TaskTracker.EditorEnableState.StackSearch = stackSearch;
-            }
-
             GUILayout.FlexibleSpace();
 
             if (GUILayout.Button(ReloadHeadContent, EditorStyles.toolbarButton, EmptyLayoutOption))

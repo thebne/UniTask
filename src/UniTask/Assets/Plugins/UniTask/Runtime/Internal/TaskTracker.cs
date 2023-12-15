@@ -7,6 +7,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks.Internal;
+using UnityEngine.Pool;
+using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -21,7 +23,6 @@ namespace Cysharp.Threading.Tasks
         public const string EnableAutoReloadKey = "UniTaskTrackerWindow_EnableAutoReloadKey";
         public const string EnableTrackingKey = "UniTaskTrackerWindow_EnableTrackingKey";
         public const string EnableStackTraceKey = "UniTaskTrackerWindow_EnableStackTraceKey";
-        public const string StackSearchKey = "UniTaskTrackerWindow_StackSearchKey";
 
         public static class EditorEnableState
         {
@@ -57,27 +58,115 @@ namespace Cysharp.Threading.Tasks
                     UnityEditor.EditorPrefs.SetBool(EnableStackTraceKey, value);
                 }
             }
-            
-            static string stackSearch;
-            public static string StackSearch
-            {
-                get { return stackSearch; }
-                set
-                {
-                    stackSearch = value;
-                    UnityEditor.EditorPrefs.SetString(StackSearchKey, value);
-                }
-            }
         }
 
 #endif
 
+        private readonly struct FrameData
+        {
+            public readonly bool isValid;
+            public readonly int offset;
+            public readonly int ilOffset;
+            public readonly MethodBase method;
+           
+            // mono internal
+            private static readonly MethodInfo get_frame_info_methodInfo 
+                = typeof(StackFrame).GetMethod("get_frame_info", BindingFlags.Static | BindingFlags.NonPublic);
 
-        static List<KeyValuePair<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackFrame, string stackTrace)>> 
+            private delegate bool get_frame_info(int depth, bool fileInfo, ref MethodBase methodBase,
+                ref int offset, ref int ilOffset, ref string fileName, ref int lineNumber, ref int columnNumber);
+            
+            private static readonly get_frame_info get_frame_info_delegate 
+                = (get_frame_info)Delegate.CreateDelegate(typeof(get_frame_info), get_frame_info_methodInfo);
+            
+            public FrameData(int depth) : this()
+            {
+                int lineNumber = 0, columnNumber = 0;
+                string fileName = null;
+                isValid = get_frame_info_delegate(depth, false, ref method, ref offset, ref ilOffset, 
+                    ref fileName, ref lineNumber, ref columnNumber);
+            }
+
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+                if (method != null)
+                {
+                    if (method.DeclaringType != null) 
+                        sb.Append(method.DeclaringType.FullName);
+                    sb.Append(".");
+                    sb.Append(method.Name);
+                }
+                else
+                {
+                    sb.Append("(unknown)");
+                }
+                
+                if (offset != 0)
+                {
+                    sb.Append(" (:");
+                    sb.Append(offset);
+                    sb.Append(")");
+                }
+                
+                return sb.ToString();
+            }
+        }
+
+
+        static List<KeyValuePair<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, List<string> stackFrames, string stackTrace)>> 
             listPool = new();
 
-        static readonly WeakDictionary<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackFrame, string stackTrace)> 
+        static readonly WeakDictionary<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, List<string> stackFrames, string stackTrace)> 
             tracking = new();
+        
+        static readonly Dictionary<FrameData, string> stackFrameStringCache = new();
+        
+        static readonly Dictionary<Type, string> typeNameCache = new();
+        
+        static readonly Dictionary<MethodBase, bool> isHiddenCache = new();
+        
+        private static List<string> GetStackFrames(int depth)
+        {
+            Profiler.BeginSample("UniTaskTracker: Allocate String Pool");
+            var frames = ListPool<string>.Get();
+            Profiler.EndSample();
+
+            do
+            {
+                Profiler.BeginSample("UniTaskTracker: Create FrameData");
+                var frame = new FrameData(depth++);
+                Profiler.EndSample();
+                
+                if (!frame.isValid)
+                    break;
+
+                if (frame.method == null)
+                    continue;
+
+                if (!isHiddenCache.TryGetValue(frame.method, out var isHidden))
+                {
+                    Profiler.BeginSample("UniTaskTracker: Check DebuggerHiddenAttribute");
+                    isHiddenCache[frame.method] = isHidden = frame.method.IsDefined(typeof(DebuggerHiddenAttribute), true);
+                    Profiler.EndSample();
+                }
+                if (isHidden)
+                    continue;
+                
+                if (!stackFrameStringCache.TryGetValue(frame, out var cached))
+                {
+                    Profiler.BeginSample("UniTaskTracker: Create Frame String");
+                    cached = frame.ToString();
+                    Profiler.EndSample();
+                    stackFrameStringCache.Add(frame, cached);
+                }
+                frames.Add(cached);
+                
+            } while (true);
+            
+            frames.Reverse();
+            return frames;
+        }
 
         [Conditional("UNITY_EDITOR")]
         public static void TrackActiveTask(IUniTaskSource task, int skipFrame)
@@ -87,40 +176,22 @@ namespace Cysharp.Threading.Tasks
             if (!EditorEnableState.EnableTracking) return;
             var stackTrace = EditorEnableState.EnableStackTrace ? new StackTrace(skipFrame, true).CleanupAsyncStackTrace() : "";
 
-            string stackFrame;
-            string firstFrame = string.Empty;
-            int depth = skipFrame;
-            MethodBase lastMethod = null;
-            do
-            {
-                var frame = new StackFrame(depth++, true);
-                if (frame.GetMethod() == lastMethod)
-                {
-                    stackFrame = firstFrame;
-                    break;
-                }
-
-                lastMethod = frame.GetMethod();
-                stackFrame = frame.ToString();
-                if (string.IsNullOrEmpty(firstFrame))
-                {
-                    firstFrame = stackFrame;
-                }
-            } 
-            while (!string.IsNullOrEmpty(EditorEnableState.StackSearch) && !stackFrame.Contains(EditorEnableState.StackSearch));
-
+            var type = task.GetType();
             string typeName;
             if (EditorEnableState.EnableStackTrace)
             {
                 var sb = new StringBuilder();
-                TypeBeautify(task.GetType(), sb);
+                TypeBeautify(type, sb);
                 typeName = sb.ToString();
             }
             else
             {
-                typeName = task.GetType().Name;
+                if (!typeNameCache.TryGetValue(type, out typeName))
+                    typeName = typeNameCache[type] = type.Name;
             }
-            tracking.TryAdd(task, (typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow, stackFrame, stackTrace));
+            
+            tracking.TryAdd(task, (typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow,
+                GetStackFrames(skipFrame + 1), stackTrace));
 #endif
         }
 
@@ -130,19 +201,21 @@ namespace Cysharp.Threading.Tasks
 #if UNITY_EDITOR
             dirty = true;
             if (!EditorEnableState.EnableTracking) return;
+            
+            if (tracking.TryGetValue(task, out var value) && value.stackFrames != null)
+                ListPool<string>.Release(value.stackFrames);
             var success = tracking.TryRemove(task);
 #endif
         }
         
-        public static string GetTaskFrame(IUniTaskSource task)
+        public static List<string> GetTaskFrames(IUniTaskSource task)
         {
 #if UNITY_EDITOR
-            if (!EditorEnableState.EnableTracking) return string.Empty;
-            return tracking.TryGetValue(task, out var value) 
-                ? value.stackFrame
-                : string.Empty;
+            if (!EditorEnableState.EnableTracking) return null;
+            return !tracking.TryGetValue(task, out var value) ? null : value.stackFrames;
+
 #else
-            return string.Empty;
+            return null;
 #endif
         }
 
