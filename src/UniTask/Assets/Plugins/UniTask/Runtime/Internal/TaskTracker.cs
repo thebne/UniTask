@@ -120,7 +120,7 @@ namespace Cysharp.Threading.Tasks
         static readonly WeakDictionary<IUniTaskSource, (string formattedType, int trackingId, DateTime addTime, List<string> stackFrames, string stackTrace)> 
             tracking = new();
         
-        static readonly Dictionary<FrameData, string> stackFrameStringCache = new();
+        static readonly Dictionary<(MethodBase methodBase, int offset), string> stackFrameStringCache = new();
         
         static readonly Dictionary<Type, string> typeNameCache = new();
         
@@ -153,12 +153,12 @@ namespace Cysharp.Threading.Tasks
                 if (isHidden)
                     continue;
                 
-                if (!stackFrameStringCache.TryGetValue(frame, out var cached))
+                if (!stackFrameStringCache.TryGetValue((frame.method, frame.offset), out var cached))
                 {
                     Profiler.BeginSample("UniTaskTracker: Create Frame String");
                     cached = frame.ToString();
                     Profiler.EndSample();
-                    stackFrameStringCache.Add(frame, cached);
+                    stackFrameStringCache.Add((frame.method, frame.offset), cached);
                 }
                 frames.Add(cached);
                 
@@ -174,6 +174,8 @@ namespace Cysharp.Threading.Tasks
 #if UNITY_EDITOR
             dirty = true;
             if (!EditorEnableState.EnableTracking) return;
+            
+            Profiler.BeginSample("UniTaskTracker: TrackActiveTask");
             var stackTrace = EditorEnableState.EnableStackTrace ? new StackTrace(skipFrame, true).CleanupAsyncStackTrace() : "";
 
             var type = task.GetType();
@@ -192,6 +194,7 @@ namespace Cysharp.Threading.Tasks
             
             tracking.TryAdd(task, (typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow,
                 GetStackFrames(skipFrame + 1), stackTrace));
+            Profiler.EndSample();
 #endif
         }
 
