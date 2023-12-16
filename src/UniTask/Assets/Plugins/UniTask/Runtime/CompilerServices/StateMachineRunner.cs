@@ -222,9 +222,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             try
             {
-                if (silenceCancellationRequested && core.UnsafeGetStatus() == UniTaskStatus.Canceled)
-                    return;
-            
                 core.GetResult(token);
             }
             finally
@@ -253,6 +250,9 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         [DebuggerHidden]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
+            if (silenceCancellationRequested && core.UnsafeGetStatus() == UniTaskStatus.Canceled)
+                return;
+            
             core.OnCompleted(continuation, state, token);
         }
 
@@ -355,9 +355,6 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         {
             try
             {
-                if (silenceCancellationRequested && core.UnsafeGetStatus() == UniTaskStatus.Canceled)
-                    return default;
-            
                 return core.GetResult(token);
             }
             finally
@@ -392,6 +389,9 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         [DebuggerHidden]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
+            if (silenceCancellationRequested && core.UnsafeGetStatus() == UniTaskStatus.Canceled)
+                return;
+            
             core.OnCompleted(continuation, state, token);
         }
 
