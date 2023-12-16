@@ -438,7 +438,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        sealed class NeverPromise<T> : IUniTaskSource<T>
+        sealed class NeverPromise<T> : IUniTaskSource<T>, ISilenceCancellation
         {
             static readonly Action<object> cancellationCallback = CancellationCallback;
 
@@ -457,6 +457,8 @@ namespace Cysharp.Threading.Tasks
             static void CancellationCallback(object state)
             {
                 var self = (NeverPromise<T>)state;
+                if (self.silenceCancellationRequested)
+                    return;
                 self.core.TrySetCanceled(self.cancellationToken);
             }
 
@@ -484,6 +486,8 @@ namespace Cysharp.Threading.Tasks
             {
                 core.GetResult(token);
             }
+
+            public bool silenceCancellationRequested { get; set; }
         }
     }
 
