@@ -622,6 +622,9 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
+            if (silenceCancellationRequested)
+                return false;
+            
             if (UnsafeGetStatus() != UniTaskStatus.Pending) return false;
 
             this.cancellationToken = cancellationToken;
@@ -711,9 +714,6 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         bool TrySignalCompletion(UniTaskStatus status)
         {
-            if (silenceCancellationRequested && status == UniTaskStatus.Canceled)
-                return false;
-            
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)UniTaskStatus.Pending) == (int)UniTaskStatus.Pending)
             {
                 if (gate == null)
@@ -812,6 +812,9 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
+            if (silenceCancellationRequested)
+                return false;
+            
             if (UnsafeGetStatus() != UniTaskStatus.Pending) return false;
 
             this.cancellationToken = cancellationToken;
@@ -907,9 +910,6 @@ namespace Cysharp.Threading.Tasks
         [DebuggerHidden]
         bool TrySignalCompletion(UniTaskStatus status)
         {
-            if (silenceCancellationRequested && status == UniTaskStatus.Canceled)
-                return false;
-            
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)UniTaskStatus.Pending) == (int)UniTaskStatus.Pending)
             {
                 if (gate == null)
