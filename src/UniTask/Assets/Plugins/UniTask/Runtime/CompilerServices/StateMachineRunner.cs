@@ -6,6 +6,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UnityEngine.Profiling;
+using Debug = UnityEngine.Debug;
 
 namespace Cysharp.Threading.Tasks.CompilerServices
 {
@@ -131,6 +132,42 @@ namespace Cysharp.Threading.Tasks.CompilerServices
     internal sealed class AsyncUniTask<TStateMachine> : IStateMachineRunnerPromise, IUniTaskSource, ITaskPoolNode<AsyncUniTask<TStateMachine>>, ISilenceCancellation
         where TStateMachine : IAsyncStateMachine
     {
+        private sealed class GCWrapper : IStateMachineRunnerPromise
+        {
+            AsyncUniTask<TStateMachine> task;
+            short token;
+
+            public GCWrapper(AsyncUniTask<TStateMachine> task, short token)
+            {
+                this.task = task;
+                this.token = token;
+                GC.KeepAlive(task);
+            }
+
+            ~GCWrapper()
+            {
+                if (task.core.Version == token)
+                    task.TryReturn();
+            }
+
+            public UniTaskStatus GetStatus(short token) => task.GetStatus(token);
+
+            public void OnCompleted(Action<object> continuation, object state, short token) 
+                => task.OnCompleted(continuation, state, token);
+
+            public void GetResult(short token) 
+                => task.GetResult(token);
+
+            public UniTaskStatus UnsafeGetStatus() 
+                => task.UnsafeGetStatus();
+
+            public Action MoveNext => task.MoveNext;
+            public UniTask Task => task.Task;
+            public void SetResult() => task.SetResult();
+
+            public void SetException(Exception exception) => task.SetException(exception);
+        }
+
         static TaskPool<AsyncUniTask<TStateMachine>> pool;
 
 #if ENABLE_IL2CPP
@@ -140,6 +177,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         TStateMachine stateMachine;
         UniTaskCompletionSourceCore<AsyncUnit> core;
+        int lastVersionReturned = -1;
 
         AsyncUniTask()
         {
@@ -151,6 +189,14 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunnerPromise runnerPromiseFieldRef)
         {
+            if (pool.Size < 16)
+            {
+                Profiler.BeginSample("Create AsyncUniTask<TStateMachine, T> Pool");
+                while (pool.Size < 32)
+                    pool.TryPush(new AsyncUniTask<TStateMachine>());
+                Profiler.EndSample();
+            }
+            
             if (!pool.TryPop(out var result))
             {
                 Profiler.BeginSample("Create AsyncUniTask<TStateMachine>");
@@ -159,7 +205,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             }
             TaskTracker.TrackActiveTask(result, 3);
 
-            runnerPromiseFieldRef = result; // set runner before copied.
+            runnerPromiseFieldRef = new GCWrapper(result, result.core.Version); // set runner before copied.
             result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
         }
 
@@ -173,6 +219,8 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         void Return()
         {
+            lastVersionReturned = core.Version;
+            
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
@@ -182,6 +230,10 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         bool TryReturn()
         {
+            if (lastVersionReturned == core.Version)
+                return false;
+            lastVersionReturned = core.Version;
+            
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
@@ -262,6 +314,47 @@ namespace Cysharp.Threading.Tasks.CompilerServices
     internal sealed class AsyncUniTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IUniTaskSource<T>, ITaskPoolNode<AsyncUniTask<TStateMachine, T>>, ISilenceCancellation
         where TStateMachine : IAsyncStateMachine
     {
+        private sealed class GCWrapper : IStateMachineRunnerPromise<T>
+        {
+            AsyncUniTask<TStateMachine, T> task;
+            short token;
+
+            public GCWrapper(AsyncUniTask<TStateMachine, T> task, short token)
+            {
+                this.task = task;
+                this.token = token;
+                GC.KeepAlive(task);
+            }
+
+            ~GCWrapper()
+            {
+                if (task.core.Version == token)
+                    task.TryReturn();
+            }
+
+            public UniTaskStatus GetStatus(short token) => task.GetStatus(token);
+
+            public void OnCompleted(Action<object> continuation, object state, short token) 
+                => task.OnCompleted(continuation, state, token);
+
+            T IUniTaskSource<T>.GetResult(short token) 
+                => task.GetResult(token);
+
+            public void GetResult(short token) 
+                => task.GetResult(token);
+
+            public UniTaskStatus UnsafeGetStatus() 
+                => task.UnsafeGetStatus();
+
+            public Action MoveNext => task.MoveNext;
+
+            UniTask<T> IStateMachineRunnerPromise<T>.Task => task.Task;
+
+            public void SetResult(T result) => task.SetResult(result);
+
+            public void SetException(Exception exception) => task.SetException(exception);
+        }
+        
         static TaskPool<AsyncUniTask<TStateMachine, T>> pool;
 
 #if ENABLE_IL2CPP
@@ -272,6 +365,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         TStateMachine stateMachine;
         UniTaskCompletionSourceCore<T> core;
+        int lastVersionReturned = -1;
 
         AsyncUniTask()
         {
@@ -283,6 +377,14 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunnerPromise<T> runnerPromiseFieldRef)
         {
+            if (pool.Size < 16)
+            {
+                Profiler.BeginSample("Create AsyncUniTask<TStateMachine, T> Pool");
+                while (pool.Size < 32)
+                    pool.TryPush(new AsyncUniTask<TStateMachine, T>());
+                Profiler.EndSample();
+            }
+            
             if (!pool.TryPop(out var result))
             {
                 Profiler.BeginSample("Create AsyncUniTask<TStateMachine, T>");
@@ -291,7 +393,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             }
             TaskTracker.TrackActiveTask(result, 3);
 
-            runnerPromiseFieldRef = result; // set runner before copied.
+            runnerPromiseFieldRef = new GCWrapper(result, result.core.Version); // set runner before copied.
             result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
         }
 
@@ -305,6 +407,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         void Return()
         {
+            lastVersionReturned = core.Version;
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
@@ -314,6 +417,10 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         bool TryReturn()
         {
+            if (lastVersionReturned == core.Version)
+                return false;
+            lastVersionReturned = core.Version;
+            
             TaskTracker.RemoveTracking(this);
             core.Reset();
             stateMachine = default;
