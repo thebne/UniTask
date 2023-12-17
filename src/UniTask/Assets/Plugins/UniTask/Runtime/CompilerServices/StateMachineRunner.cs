@@ -160,6 +160,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             TaskTracker.TrackActiveTask(result, 3);
 
             runnerPromiseFieldRef = result; // set runner before copied.
+            result.silenceCancellationRequested = false;
             result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
         }
 
@@ -292,6 +293,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             TaskTracker.TrackActiveTask(result, 3);
 
             runnerPromiseFieldRef = result; // set runner before copied.
+            result.silenceCancellationRequested = false;
             result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
         }
 
