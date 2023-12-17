@@ -139,6 +139,7 @@ namespace Cysharp.Threading.Tasks
             bool TryReturn()
             {
                 TaskTracker.RemoveTracking(this);
+                silenceCancellationRequested = false;
                 core.Reset();
                 predicate = default;
                 cancellationToken = default;
@@ -251,6 +252,7 @@ namespace Cysharp.Threading.Tasks
             bool TryReturn()
             {
                 TaskTracker.RemoveTracking(this);
+                silenceCancellationRequested = false;
                 core.Reset();
                 predicate = default;
                 cancellationToken = default;
