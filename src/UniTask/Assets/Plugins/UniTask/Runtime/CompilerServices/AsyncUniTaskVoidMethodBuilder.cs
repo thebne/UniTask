@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using UnityEngine;
 
 namespace Cysharp.Threading.Tasks.CompilerServices
 {
@@ -15,7 +16,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         IStateMachineRunner runner;
 
         // 1. Static Create method.
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AsyncUniTaskVoidMethodBuilder Create()
         {
@@ -25,7 +26,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         // 2. TaskLike Task property(void)
         public UniTaskVoid Task
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
@@ -34,7 +35,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         }
 
         // 3. SetException
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetException(Exception exception)
         {
@@ -54,7 +55,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         }
 
         // 4. SetResult
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetResult()
         {
@@ -72,7 +73,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         }
 
         // 5. AwaitOnCompleted
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
             where TAwaiter : INotifyCompletion
@@ -87,7 +88,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         }
 
         // 6. AwaitUnsafeOnCompleted
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [SecuritySafeCritical]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
@@ -103,7 +104,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         }
 
         // 7. Start
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void Start<TStateMachine>(ref TStateMachine stateMachine)
             where TStateMachine : IAsyncStateMachine
         {
@@ -111,7 +112,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
         }
 
         // 8. SetStateMachine
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             // don't use boxed stateMachine.

@@ -160,7 +160,7 @@ namespace Cysharp.Threading.Tasks.Internal
         void LastTimeUpdate() => RunCore();
 #endif
 
-        // [System.Diagnostics.DebuggerHidden]
+        [System.Diagnostics.DebuggerHidden, HideInCallstack]
         void RunCore()
         {
             lock (runningAndQueueLock)

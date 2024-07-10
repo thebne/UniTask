@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks.CompilerServices
@@ -100,7 +101,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             pool.TryPush(this);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void Run()
         {
@@ -189,7 +190,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             return pool.TryPush(this);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void Run()
         {
@@ -198,26 +199,26 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         public UniTask Task
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             get
             {
                 return new UniTask(this, core.Version);
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void SetResult()
         {
             core.TrySetResult(AsyncUnit.Default);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void SetException(Exception exception)
         {
             core.TrySetException(exception);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void GetResult(short token)
         {
             try
@@ -238,19 +239,19 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus GetStatus(short token)
         {
             return core.GetStatus(token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus UnsafeGetStatus()
         {
             return core.UnsafeGetStatus();
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
             core.OnCompleted(continuation, state, token);
@@ -321,7 +322,7 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             return pool.TryPush(this);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         void Run()
         {
@@ -331,26 +332,26 @@ namespace Cysharp.Threading.Tasks.CompilerServices
 
         public UniTask<T> Task
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             get
             {
                 return new UniTask<T>(this, core.Version);
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void SetResult(T result)
         {
             core.TrySetResult(result);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void SetException(Exception exception)
         {
             core.TrySetException(exception);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public T GetResult(short token)
         {
             try
@@ -371,25 +372,25 @@ namespace Cysharp.Threading.Tasks.CompilerServices
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         void IUniTaskSource.GetResult(short token)
         {
             GetResult(token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus GetStatus(short token)
         {
             return core.GetStatus(token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus UnsafeGetStatus()
         {
             return core.UnsafeGetStatus();
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
             core.OnCompleted(continuation, state, token);

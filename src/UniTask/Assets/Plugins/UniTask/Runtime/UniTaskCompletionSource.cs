@@ -8,6 +8,7 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Cysharp.Threading.Tasks.Internal;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Cysharp.Threading.Tasks
@@ -87,7 +88,7 @@ namespace Cysharp.Threading.Tasks
         Action<object> continuation;
         object continuationState;
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void Reset()
         {
             ReportUnhandledError();
@@ -132,7 +133,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>Completes with a successful result.</summary>
         /// <param name="result">The result.</param>
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetResult(TResult result)
         {
             if (Interlocked.Increment(ref completedCount) == 1)
@@ -152,7 +153,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>Completes with an error.</summary>
         /// <param name="error">The exception.</param>
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetException(Exception error)
         {
             if (Interlocked.Increment(ref completedCount) == 1)
@@ -178,7 +179,7 @@ namespace Cysharp.Threading.Tasks
             return false;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
             if (Interlocked.Increment(ref completedCount) == 1)
@@ -203,7 +204,7 @@ namespace Cysharp.Threading.Tasks
 
         /// <summary>Gets the status of the operation.</summary>
         /// <param name="token">Opaque value that was provided to the <see cref="UniTask"/>'s constructor.</param>
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UniTaskStatus GetStatus(short token)
         {
@@ -215,7 +216,7 @@ namespace Cysharp.Threading.Tasks
         }
 
         /// <summary>Gets the status of the operation without token validation.</summary>
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public UniTaskStatus UnsafeGetStatus()
         {
@@ -228,7 +229,7 @@ namespace Cysharp.Threading.Tasks
         /// <summary>Gets the result of the operation.</summary>
         /// <param name="token">Opaque value that was provided to the <see cref="UniTask"/>'s constructor.</param>
         // [StackTraceHidden]
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TResult GetResult(short token)
         {
@@ -260,7 +261,7 @@ namespace Cysharp.Threading.Tasks
         /// <param name="continuation">The continuation to invoke when the operation has completed.</param>
         /// <param name="state">The state object to pass to <paramref name="continuation"/> when it's invoked.</param>
         /// <param name="token">Opaque value that was provided to the <see cref="UniTask"/>'s constructor.</param>
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void OnCompleted(Action<object> continuation, object state, short token /*, ValueTaskSourceOnCompletedFlags flags */)
         {
@@ -301,7 +302,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ValidateToken(short token)
         {
@@ -339,7 +340,7 @@ namespace Cysharp.Threading.Tasks
         {
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource Create()
         {
             if (!pool.TryPop(out var result))
@@ -352,7 +353,7 @@ namespace Cysharp.Threading.Tasks
             return result;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource CreateFromCanceled(CancellationToken cancellationToken, out short token)
         {
             var source = Create();
@@ -361,7 +362,7 @@ namespace Cysharp.Threading.Tasks
             return source;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource CreateFromException(Exception exception, out short token)
         {
             var source = Create();
@@ -370,7 +371,7 @@ namespace Cysharp.Threading.Tasks
             return source;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource CreateCompleted(out short token)
         {
             var source = Create();
@@ -381,32 +382,32 @@ namespace Cysharp.Threading.Tasks
 
         public UniTask Task
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             get
             {
                 return new UniTask(this, core.Version);
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetResult()
         {
             return core.TrySetResult(AsyncUnit.Default);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
             return core.TrySetCanceled(cancellationToken);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetException(Exception exception)
         {
             return core.TrySetException(exception);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void GetResult(short token)
         {
             try
@@ -420,25 +421,25 @@ namespace Cysharp.Threading.Tasks
 
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus GetStatus(short token)
         {
             return core.GetStatus(token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus UnsafeGetStatus()
         {
             return core.UnsafeGetStatus();
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
             core.OnCompleted(continuation, state, token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         bool TryReturn()
         {
             TaskTracker.RemoveTracking(this);
@@ -464,7 +465,7 @@ namespace Cysharp.Threading.Tasks
         {
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource<T> Create()
         {
             if (!pool.TryPop(out var result))
@@ -477,7 +478,7 @@ namespace Cysharp.Threading.Tasks
             return result;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource<T> CreateFromCanceled(CancellationToken cancellationToken, out short token)
         {
             var source = Create();
@@ -486,7 +487,7 @@ namespace Cysharp.Threading.Tasks
             return source;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource<T> CreateFromException(Exception exception, out short token)
         {
             var source = Create();
@@ -495,7 +496,7 @@ namespace Cysharp.Threading.Tasks
             return source;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public static AutoResetUniTaskCompletionSource<T> CreateFromResult(T result, out short token)
         {
             var source = Create();
@@ -506,32 +507,32 @@ namespace Cysharp.Threading.Tasks
 
         public UniTask<T> Task
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             get
             {
                 return new UniTask<T>(this, core.Version);
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetResult(T result)
         {
             return core.TrySetResult(result);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
             return core.TrySetCanceled(cancellationToken);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetException(Exception exception)
         {
             return core.TrySetException(exception);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public T GetResult(short token)
         {
             try
@@ -544,31 +545,31 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         void IUniTaskSource.GetResult(short token)
         {
             GetResult(token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus GetStatus(short token)
         {
             return core.GetStatus(token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus UnsafeGetStatus()
         {
             return core.UnsafeGetStatus();
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
             core.OnCompleted(continuation, state, token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         bool TryReturn()
         {
             TaskTracker.RemoveTracking(this);
@@ -594,7 +595,7 @@ namespace Cysharp.Threading.Tasks
             TaskTracker.TrackActiveTask(this, 2);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         internal void MarkHandled()
         {
             if (!handled)
@@ -606,20 +607,20 @@ namespace Cysharp.Threading.Tasks
 
         public UniTask Task
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             get
             {
                 return new UniTask(this, 0);
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetResult()
         {
             return TrySignalCompletion(UniTaskStatus.Succeeded);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
             if (silenceCancellationRequested)
@@ -631,7 +632,7 @@ namespace Cysharp.Threading.Tasks
             return TrySignalCompletion(UniTaskStatus.Canceled);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetException(Exception exception)
         {
             if (exception is OperationCanceledException oce)
@@ -645,7 +646,7 @@ namespace Cysharp.Threading.Tasks
             return TrySignalCompletion(UniTaskStatus.Faulted);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void GetResult(short token)
         {
             MarkHandled();
@@ -666,19 +667,19 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus GetStatus(short token)
         {
             return (UniTaskStatus)intStatus;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus UnsafeGetStatus()
         {
             return (UniTaskStatus)intStatus;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
             if (gate == null)
@@ -711,7 +712,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         bool TrySignalCompletion(UniTaskStatus status)
         {
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)UniTaskStatus.Pending) == (int)UniTaskStatus.Pending)
@@ -781,7 +782,7 @@ namespace Cysharp.Threading.Tasks
             TaskTracker.TrackActiveTask(this, 2);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         internal void MarkHandled()
         {
             if (!handled)
@@ -793,14 +794,14 @@ namespace Cysharp.Threading.Tasks
 
         public UniTask<T> Task
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             get
             {
                 return new UniTask<T>(this, 0);
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetResult(T result)
         {
             if (UnsafeGetStatus() != UniTaskStatus.Pending) return false;
@@ -809,7 +810,7 @@ namespace Cysharp.Threading.Tasks
             return TrySignalCompletion(UniTaskStatus.Succeeded);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetCanceled(CancellationToken cancellationToken = default)
         {
             if (silenceCancellationRequested)
@@ -821,7 +822,7 @@ namespace Cysharp.Threading.Tasks
             return TrySignalCompletion(UniTaskStatus.Canceled);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public bool TrySetException(Exception exception)
         {
             if (exception is OperationCanceledException oce)
@@ -835,7 +836,7 @@ namespace Cysharp.Threading.Tasks
             return TrySignalCompletion(UniTaskStatus.Faulted);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public T GetResult(short token)
         {
             MarkHandled();
@@ -856,25 +857,25 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         void IUniTaskSource.GetResult(short token)
         {
             GetResult(token);
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus GetStatus(short token)
         {
             return (UniTaskStatus)intStatus;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public UniTaskStatus UnsafeGetStatus()
         {
             return (UniTaskStatus)intStatus;
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         public void OnCompleted(Action<object> continuation, object state, short token)
         {
             if (gate == null)
@@ -907,7 +908,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         bool TrySignalCompletion(UniTaskStatus status)
         {
             if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)UniTaskStatus.Pending) == (int)UniTaskStatus.Pending)

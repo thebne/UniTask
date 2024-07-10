@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using UnityEngine;
 
 namespace Cysharp.Threading.Tasks
 {
@@ -14,7 +15,7 @@ namespace Cysharp.Threading.Tasks
     {
         internal static readonly Action<object> InvokeContinuationDelegate = Continuation;
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void Continuation(object state)
         {
@@ -42,7 +43,7 @@ namespace Cysharp.Threading.Tasks
 
         public UniTaskStatus Status
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
@@ -51,7 +52,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Awaiter GetAwaiter()
         {
@@ -305,7 +306,7 @@ namespace Cysharp.Threading.Tasks
 
             public bool IsCompleted
             {
-                [DebuggerHidden]
+                [DebuggerHidden, HideInCallstack]
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get
                 {
@@ -313,7 +314,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void GetResult()
             {
@@ -321,7 +322,7 @@ namespace Cysharp.Threading.Tasks
                 task.source.GetResult(task.token);
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted(Action continuation)
             {
@@ -335,7 +336,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void UnsafeOnCompleted(Action continuation)
             {
@@ -352,7 +353,7 @@ namespace Cysharp.Threading.Tasks
             /// <summary>
             /// If register manually continuation, you can use it instead of for compiler OnCompleted methods.
             /// </summary>
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void SourceOnCompleted(Action<object> continuation, object state)
             {
@@ -405,7 +406,7 @@ namespace Cysharp.Threading.Tasks
 
         public UniTaskStatus Status
         {
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
@@ -413,7 +414,7 @@ namespace Cysharp.Threading.Tasks
             }
         }
 
-        [DebuggerHidden]
+        [DebuggerHidden, HideInCallstack]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Awaiter GetAwaiter()
         {
@@ -518,7 +519,7 @@ namespace Cysharp.Threading.Tasks
                 this.source = source;
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public (bool, T) GetResult(short token)
             {
@@ -531,28 +532,28 @@ namespace Cysharp.Threading.Tasks
                 return (false, result);
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             void IUniTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public UniTaskStatus GetStatus(short token)
             {
                 return source.GetStatus(token);
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public UniTaskStatus UnsafeGetStatus()
             {
                 return source.UnsafeGetStatus();
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted(Action<object> continuation, object state, short token)
             {
@@ -661,7 +662,7 @@ namespace Cysharp.Threading.Tasks
 
             public bool IsCompleted
             {
-                [DebuggerHidden]
+                [DebuggerHidden, HideInCallstack]
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 get
                 {
@@ -669,7 +670,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public T GetResult()
             {
@@ -684,7 +685,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void OnCompleted(Action continuation)
             {
@@ -699,7 +700,7 @@ namespace Cysharp.Threading.Tasks
                 }
             }
 
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void UnsafeOnCompleted(Action continuation)
             {
@@ -717,7 +718,7 @@ namespace Cysharp.Threading.Tasks
             /// <summary>
             /// If register manually continuation, you can use it instead of for compiler OnCompleted methods.
             /// </summary>
-            [DebuggerHidden]
+            [DebuggerHidden, HideInCallstack]
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void SourceOnCompleted(Action<object> continuation, object state)
             {
